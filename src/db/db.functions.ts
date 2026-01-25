@@ -14,8 +14,6 @@ import { firestore } from "../utils/config";
 
 import { encryptedDoc } from "../types/common";
 
-import { dailyLogInterface } from "../types/lifeTracker";
-
 export const collectionRefMaker = (uid: string) => {
   const collectionRef = collection(firestore, `mindspace/${uid}/thoughts`);
 
@@ -26,7 +24,7 @@ export const docRefMaker = (
   collectionName: "mindspace" | "userlogs",
   uid: string,
   subCollection: "logs" | "thoughts",
-  doc_id: string
+  doc_id: string,
 ) => {
   const docRef = doc(firestore, collectionName, uid, subCollection, doc_id);
 
@@ -37,7 +35,7 @@ export const docGetter = async (
   collectionName: "mindspace" | "userlogs",
   uid: string,
   subCollection: "logs" | "thoughts",
-  doc_id: string
+  doc_id: string,
 ) => {
   const docRef = docRefMaker(collectionName, uid, subCollection, doc_id);
   const doc = await getDoc(docRef);
@@ -51,7 +49,7 @@ export const docGetter = async (
 
 export async function paginatedDocs(
   collectionRef: CollectionReference<DocumentData, DocumentData>,
-  cursor?: string
+  cursor?: string,
 ) {
   let q;
 
@@ -62,14 +60,12 @@ export async function paginatedDocs(
       collectionRef,
       orderBy("__name__", "desc"),
       startAfter(cursor),
-      limit(10)
+      limit(10),
     );
   }
 
   const snap = await getDocs(q);
-  const docs = snap.docs.map(
-    (doc) => doc.data() as dailyLogInterface | encryptedDoc
-  );
+  const docs = snap.docs.map((doc) => doc.data() as encryptedDoc);
 
   return docs;
 }

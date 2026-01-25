@@ -1,7 +1,7 @@
 {
-  "name": "life_tracker_server",
+  "name": "mind_space_server",
   "version": "1.0.0",
-  "description": "server for life tracker app",
+  "description": "server for mind_space app",
   "license": "ISC",
   "author": "light",
   "type": "commonjs",

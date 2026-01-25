@@ -19,7 +19,7 @@ export const MindSpaceContoller = {
   async getSingle(req: Request, res: Response<DataResponseConfig<Thought>>) {
     const { jwt } = req as VerifiedJwtRequest;
     const { uid } = jwt;
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!id) throw new AppError("Document id is required", 400);
 
     const data = await ThoughtService.getSingle(uid, id);

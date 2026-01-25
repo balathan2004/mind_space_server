@@ -9,7 +9,7 @@ import cors from "cors";
 import mindSpaceRouter from "./routes/mindspace";
 import { authenticateToken } from "./jwt/jwt";
 import { errorHandler } from "./middlewares/errorHandler";
-import LifeTrackerRouter from "./routes/lifeTracker";
+
 import AuthApiRoute from "./routes/authApi";
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: ["http://localhost:8080", "http://localhost:8081"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,8 +38,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/auth", AuthApiRoute);
-app.use("/api", authenticateToken, LifeTrackerRouter);
-app.use("/mindspace", authenticateToken, mindSpaceRouter);
+app.use("/api", authenticateToken, mindSpaceRouter);
 
 app.get("/test", (req: Request, res: Response) => {
   res.json({ message: "test route", status: 200 });
