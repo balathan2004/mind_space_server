@@ -11,6 +11,7 @@ import { authenticateToken } from "./jwt/jwt";
 import { errorHandler } from "./middlewares/errorHandler";
 
 import AuthApiRoute from "./routes/authApi";
+import { connectDB } from "./db/db.functions";
 
 const app = express();
 
@@ -36,6 +37,8 @@ app.get("/", (req: Request, res: Response) => {
   </html>
 `);
 });
+
+connectDB()
 
 app.use("/auth", AuthApiRoute);
 app.use("/api", authenticateToken, mindSpaceRouter);

@@ -4,16 +4,17 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { AppError } from "../utils/appError";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "../utils/config";
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
 } from "../jwt/jwt";
-import { UserDataInterface } from "../types/common";
+import { SecureUser, User } from "../types";
 import { generateUsername } from "unique-username-generator";
 import { print } from "../utils/logger";
+import { getUser } from "../db/db.functions";
 
 export const AuthServices = {
   async login({ email, password }: { email: string; password: string }) {
@@ -23,56 +24,54 @@ export const AuthServices = {
     if (!uid) {
       throw new AppError("Account not found", 400);
     }
-    const docRef = doc(firestore, "users", uid);
 
-    const credentials = (await getDoc(docRef)).data() as UserDataInterface;
-    const accessToken = generateAccessToken(credentials);
-    const refreshToken = generateRefreshToken(credentials);
-    return { credentials, accessToken, refreshToken };
+    const user = await getUser(uid);
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    return { ...user, accessToken, refreshToken } as SecureUser;
   },
 
   async register({ email, password }: { email: string; password: string }) {
     const uid = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     ).then((user) => user.user.uid);
 
-    const credentials: UserDataInterface = {
+    const user: User = {
       email,
       created_at: new Date().getTime(),
       display_name: generateUsername("-", 5),
       uid: uid,
     };
 
-    await setDoc(doc(firestore, "users", uid), credentials);
-    const accessToken = generateAccessToken(credentials);
-    const refreshToken = generateRefreshToken(credentials);
+    await setDoc(doc(firestore, "users", uid), user);
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    return { credentials, accessToken, refreshToken };
+    return { ...user, accessToken, refreshToken } as SecureUser;
   },
 
   async verifyUsingRefresh(token: string) {
     const payload = verifyRefreshToken(token);
 
-    const { created_at, display_name, email, uid } =
-      payload as UserDataInterface;
+    const { created_at, display_name, email, uid } = payload as User;
 
-    const credentials = {
+    const user = {
       created_at,
       display_name,
       email,
       uid,
     };
 
-    if (!credentials) {
+    if (!user) {
       print("data not found");
       throw new AppError("unauthorised", 400);
     }
 
-    const accessToken = generateAccessToken(credentials);
+    const accessToken = generateAccessToken(user);
 
-    return { credentials, accessToken };
+    return { ...user, accessToken } as SecureUser;
   },
 
   async forgetPassword(email: string) {

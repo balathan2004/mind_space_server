@@ -19,6 +19,7 @@
     "firebase": "^11.8.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.1.5",
     "short-unique-id": "^5.3.2",
     "unique-username-generator": "^1.4.0",
     "zod": "^4.1.13"

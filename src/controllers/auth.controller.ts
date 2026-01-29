@@ -1,32 +1,40 @@
 import { Request, Response } from "express";
-import { AuthResponseConfig, ResponseConfig } from "../types/common";
+import {
+  DataResponseConfig,
+  ResponseConfig,
+  SecureUser,
+  User,
+} from "../types";
 import { AuthServices } from "../services/auth.services";
 
 export const AuthConroller = {
-  async login(req: Request, res: Response<AuthResponseConfig>) {
+  async login(req: Request, res: Response<DataResponseConfig<SecureUser>>) {
     const { email, password } = req.body;
 
     const data = await AuthServices.login({ email, password });
 
     res.status(200).json({
       message: "login Successful",
-      ...data,
+      data: data,
     });
   },
-  async register(req: Request, res: Response) {
+  async register(req: Request, res: Response<DataResponseConfig<SecureUser>>) {
     const { email, password } = req.body;
 
     const data = await AuthServices.register({ email, password });
 
     res.status(200).json({
       message: "logged in",
-      ...data,
+      data,
     });
   },
-  async refreshToken(req: Request, res: Response) {
+  async refreshToken(
+    req: Request,
+    res: Response<DataResponseConfig<SecureUser>>,
+  ) {
     const refreshToken = (req.body.refreshToken as string) || "";
 
-    console.log({refreshToken},"token placed")
+    console.log({ refreshToken }, "token placed");
 
     console.log(refreshToken);
 
@@ -34,7 +42,7 @@ export const AuthConroller = {
 
     res.status(200).json({
       message: "autheticated",
-      ...data,
+      data,
     });
   },
 

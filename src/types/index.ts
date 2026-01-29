@@ -4,28 +4,27 @@ export interface ResponseConfig {
 }
 
 export interface JwtRequest extends Request {
-  jwt?: UserDataInterface;
+  jwt?: User;
 }
 
 export interface VerifiedJwtRequest extends Request {
-  jwt: UserDataInterface;
+  jwt: User;
 }
 
 export interface QuoteResponseConfig {
   quote: string;
 }
 
-export interface AuthResponseConfig extends ResponseConfig {
-  credentials: UserDataInterface | null;
-  accessToken?: string;
-  refreshToken?: string;
-}
-
-export interface UserDataInterface {
+export interface User {
   display_name: string;
   email: string;
   uid: string;
   created_at: number;
+}
+
+export interface SecureUser extends User {
+  accessToken: string;
+  refreshToken: string;
 }
 
 export type DataResponseConfig<T> = {
@@ -47,10 +46,21 @@ export interface QuoteResponseConfig {
   quote: string;
 }
 
-export interface UserDataInterface {
-  display_name: string;
-  uid: string;
-  created_at: number;
+export interface EncryptedThought {
+  encrypted: boolean;
+  data: string;
 }
 
-// mind space
+export type Thought = {
+  _id: string;
+  uid: string;
+  title: string;
+  description: string;
+  occurredAt: Date;
+  createdAt: Date;
+  lastModified: Date;
+  readsAt: Date[];
+  tags: string[];
+};
+
+export type ClientThought = Omit<Thought, "createdAt" | "lastModified">;

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { MindSpaceContoller } from "../controllers/mindSpace.controller";
 import { Request, Response } from "express";
 import { validateBody } from "../middlewares/bodyValidator";
-import { thoughtSchema } from "../schemas/mindSpaceSchema";
+import { thoughtSchema } from "../schemas/thoughtSchema";
 const mindSpaceRouter = Router();
 
 mindSpaceRouter.get("/", (req: Request, res: Response) => {
@@ -16,13 +16,13 @@ mindSpaceRouter.get("/thoughts/:id", MindSpaceContoller.getSingle);
 mindSpaceRouter.post(
   "/thoughts",
   validateBody(thoughtSchema),
-  MindSpaceContoller.create
+  MindSpaceContoller.create,
 );
 
 mindSpaceRouter.put(
   "/thoughts/:id",
   validateBody(thoughtSchema),
-  MindSpaceContoller.update
+  MindSpaceContoller.update,
 );
 
 export default mindSpaceRouter;

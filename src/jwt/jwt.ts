@@ -1,4 +1,4 @@
-import { JwtRequest, UserDataInterface } from "../types/common";
+import { JwtRequest, User } from "../types";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -9,7 +9,7 @@ export function verifyToken(
   token: string,
   req: JwtRequest,
   res: Response,
-  next: any
+  next: any,
 ) {
   jwt.verify(token, JWT_ACCESS_SECRET || "", (err, user: any) => {
     if (err) {
@@ -30,18 +30,18 @@ export function verifyToken(
 export async function authenticateToken(
   req: Request,
   res: Response,
-  next: any
+  next: any,
 ) {
   const authHeader = req.headers.authorization || "";
   const token = authHeader.split(" ")[1];
   verifyToken(token, req, res, next);
 }
 
-export function generateAccessToken(user: UserDataInterface) {
+export function generateAccessToken(user: User) {
   return jwt.sign(user, JWT_ACCESS_SECRET, { expiresIn: "1D" });
 }
 
-export function generateRefreshToken(user: UserDataInterface) {
+export function generateRefreshToken(user: User) {
   return jwt.sign(user, JWT_REFRESH_SECRET, { expiresIn: "30D" });
 }
 

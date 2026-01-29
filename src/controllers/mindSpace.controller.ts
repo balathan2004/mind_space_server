@@ -3,11 +3,11 @@ import {
   DataResponseConfig,
   ResponseConfig,
   VerifiedJwtRequest,
-} from "../types/common";
+} from "../types";
 import { ThoughtService } from "../services/mindSpace.services";
 import { Response, Request } from "express";
 import { AppError } from "../utils/appError";
-import { Thought } from "../types/mindSpace";
+import { Thought } from "../types";
 export const MindSpaceContoller = {
   async get(req: Request, res: Response<DataListResponseConfig<Thought>>) {
     const { jwt } = req as VerifiedJwtRequest;
@@ -20,17 +20,19 @@ export const MindSpaceContoller = {
     const { jwt } = req as VerifiedJwtRequest;
     const { uid } = jwt;
     const id = req.params.id as string;
+    console.log({uid,id});
     if (!id) throw new AppError("Document id is required", 400);
 
-    const data = await ThoughtService.getSingle(uid, id);
+    const data = await ThoughtService.getDoc( uid,id);
 
-    res.json({ data, message: "document fetched" });
+    res.json({ data: data as any, message: "document fetched" });
   },
 
   async create(req: Request, res: Response<ResponseConfig>) {
     const { jwt } = req as VerifiedJwtRequest;
     const { uid } = jwt;
-    const note = req.body.data;
+    const note = req.body;
+    console.log({ note });
     const data = await ThoughtService.create(uid, note);
     res.status(201).json({ message: "Document created" });
   },
@@ -40,7 +42,7 @@ export const MindSpaceContoller = {
     const { uid } = jwt;
     const doc_id = req.params.id as string;
 
-    const note = req.body.data;
+    const note = req.body;
 
     if (doc_id !== note._id) {
       throw new AppError("Document ID does not match thought ID", 400);
